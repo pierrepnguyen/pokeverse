@@ -46,17 +46,7 @@ function App() {
 
 
   return (
-    <div data-testid="app">
-      <Navigation />
-      <InputGroup  style={{paddingLeft:'40%', paddingRight:'40%'}} onChange={handleChange} >
-        <Form.Control placeholder='Search Pokemon' onChange={this.handleChange}/>
-      </InputGroup>
-
-
-      <div className='d-flex flex-lg-wrap justify-content-center mb-3'>
-      {filteredPokemon.map(pokemon => <PokemonCard url={pokemon.sprites.front_default} name={pokemon.name} abilities={pokemon.abilities}/>)}
-      </div>
-    </div>
+    
   );
 }
 
