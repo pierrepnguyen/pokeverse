@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigation } from './components/Navigation';
 import { PokemonCard } from './components/PokemonCard';
 import { useState } from 'react';
@@ -7,54 +7,58 @@ import Card from 'react-bootstrap/Card';
 
 const LIMIT = 150;
 const pokeApi = `https://pokeapi.co/api/v2/pokemon/?limit=${LIMIT}`;
-const pokeImage = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",';
 
 function App() {
 
-  const [rawPokemon, setRawPokemon] = useState([]);
-  const [filteredPokemon, setFilteredPokemon] = useState([]);
+  const [allPokemon, setAllPokemon] = useState([]);
+  const [pokemonFiltered, setPokemonFiltered] = useState([]);
 
-  const fetchPokemon = async () => {
-    const response = await fetch(pokeApi)
-    const data = await response.json()
-
-    const newPokemon = [];
-    for(let i = 0; i < data.results.length; i++){
-      const response2 = await fetch(data.results[i].url);
-      const data2 = await response2.json();
-
-      newPokemon.push(data2)
-    }
-    
-    setRawPokemon(newPokemon);
-    setFilteredPokemon(rawPokemon);
-  };
-
+  async function fetchPokemon(){
+    const response = await fetch(pokeApi);
+    const data = await response.json();
+    setAllPokemon(data.results);
+    setPokemonFiltered(data.results);
+  }
   useEffect(()=>{
     fetchPokemon()
   },[])
 
   function handleChange(e) {
     const value = e.target.value;
-    const regex = new RegExp(value,'gi');
-    const filtered = rawPokemon.filter((pokemon)=> {
-      return pokemon.name.match(regex)
+    const regex = new RegExp(value, 'gi');
+    const filtered = allPokemon.filter((pokemon) => {
+      return pokemon.name.match(regex);
     });
 
-    setFilteredPokemon(filtered)
-  };
+    setPokemonFiltered(filtered);
+  }
 
 
   return (
     <div data-testid="app">
       <Navigation />
-      <InputGroup  style={{paddingLeft:'40%', paddingRight:'40%'}} onChange={handleChange} >
-        <Form.Control placeholder='Search Pokemon' onChange={this.handleChange}/>
+      <InputGroup onChange={handleChange} className="mb-3 mx-auto" style={{width: '50rem'}}>
+        <InputGroup.Text id="basic-addon1">Search</InputGroup.Text>
+        <Form.Control
+          placeHolder="Search Pokemon"
+          aria-label="Search Pokemon"
+          aria-describedby="basic-addon1"
+        />
       </InputGroup>
-
-
-      <div className='d-flex flex-lg-wrap justify-content-center mb-3'>
-      {filteredPokemon.map(pokemon => <PokemonCard url={pokemon.sprites.front_default} name={pokemon.name} abilities={pokemon.abilities}/>)}
+      <h1 className="text-center">PokeVerse</h1>
+      <div className="container">
+        <div className="row">
+          {pokemonFiltered.map((pokemon, idx) => (
+            <div className="col-3">
+              <PokemonCard 
+                key={idx} 
+                name={pokemon.name} 
+                url={pokemon.url}
+                pokemonFiltered={pokemonFiltered}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
