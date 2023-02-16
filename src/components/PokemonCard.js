@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card } from 'react-bootstrap';
 
-function PokemonCard({ url, name, abilities }) {
+function PokemonCard({ url, name, pokemonFiltered }) {
 
   const [onePokemon, setOnePokemon] = useState({});
 
