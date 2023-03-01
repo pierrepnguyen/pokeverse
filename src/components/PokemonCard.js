@@ -25,7 +25,9 @@ function PokemonCard({ url, name }) {
         src={pokemon?.sprites.front_default}
       />
       <Card.Body>
-        <Card.Title>{name}</Card.Title>
+        <Card.Title>
+          <Link to={`/${name}`}>{name}</Link>
+        </Card.Title>
         <Card.Text as='div'>
           Abilities:
           <ul>
