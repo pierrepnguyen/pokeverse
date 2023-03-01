@@ -1,37 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import { Card } from 'react-bootstrap';
+import Card from 'react-bootstrap/Card';
 
-function PokemonCard({ url, name, pokemonFiltered }) {
+function PokemonCard({ url, name }) {
+  const [pokemon, setPokemon] = useState(null);
 
-  const [onePokemon, setOnePokemon] = useState({});
-
-  async function fetchOnePokemon() {
-    const response = await fetch(url);
-    const data = await response.json();
-    setOnePokemon(data);
-  }
-
-  useEffect( () => {
-    fetchOnePokemon();
-  }, [pokemonFiltered])
+  useEffect(() => {
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        setPokemon(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [url]);
 
   return (
-    <div>
-    { onePokemon.sprites ? (
-      <div class="col-4" className = "mb-3">
-        <Card style={{width: '18rem', height: '420px'}} bg="light">
-          <Card.Img variant="top" src={onePokemon.sprites.front_default}></Card.Img>
-          <Card.Header className="text-center text-capitalize">{name}</Card.Header>
-          <Card.Text as="div" className="text-capitalize">
-            <ul>Abilities:
-              {onePokemon.abilities.map((ability, idx) => (
-              <li key={idx}>{ability.ability.name}</li>))}
-            </ul>
-          </Card.Text>
-        </Card>
-      </div>
-    ) : null }
-    </div>
+    <Card style={{ width: '18rem' }} className='mx-auto'>
+      <Card.Img
+        width='286'
+        height='286'
+        bg='dark'
+        variant='top'
+        src={pokemon?.sprites.front_default}
+      />
+      <Card.Body>
+        <Card.Title>{name}</Card.Title>
+        <Card.Text as='div'>
+          Abilities:
+          <ul>
+            {pokemon?.abilities.map((ability) => (
+              <li key={ability.ability.name}>
+                <span key={ability.ability.name}>{ability.ability.name}</span>
+              </li>
+            ))}
+          </ul>
+        </Card.Text>
+      </Card.Body>
+    </Card>
   );
 }
 

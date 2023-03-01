@@ -1,65 +1,55 @@
 import React, { useEffect, useState } from 'react';
+import Col from 'react-bootstrap/Col';
+import Container from 'react-bootstrap/Container';
+import FormControl from 'react-bootstrap/FormControl';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Row from 'react-bootstrap/Row';
 import { Navigation } from './components/Navigation';
 import { PokemonCard } from './components/PokemonCard';
-import { useState } from 'react';
-import { Card, Container, Form, InputGroup } from 'react-bootstrap';
-import Card from 'react-bootstrap/Card';
-
-const LIMIT = 150;
-const pokeApi = `https://pokeapi.co/api/v2/pokemon/?limit=${LIMIT}`;
 
 function App() {
+  const [pokemonList, setPokemonList] = useState([]);
+  const [filteredPokemon, setFilteredPokemon] = useState([]);
+  const [search, setSearch] = useState('');
 
-  const [allPokemon, setAllPokemon] = useState([]);
-  const [pokemonFiltered, setPokemonFiltered] = useState([]);
-
-  async function fetchPokemon(){
-    const response = await fetch(pokeApi);
-    const data = await response.json();
-    setAllPokemon(data.results);
-    setPokemonFiltered(data.results);
-  }
-  useEffect(()=>{
-    fetchPokemon()
-  },[])
-
-  function handleChange(e) {
-    const value = e.target.value;
-    const regex = new RegExp(value, 'gi');
-    const filtered = allPokemon.filter((pokemon) => {
-      return pokemon.name.match(regex);
-    });
-
-    setPokemonFiltered(filtered);
-  }
-
+  useEffect(() => {
+    fetch('https://pokeapi.co/api/v2/pokemon/?limit=150')
+      .then((res) => res.json())
+      .then((data) => {
+        setPokemonList(data.results);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   return (
     <div data-testid="app">
       <Navigation />
-      <InputGroup onChange={handleChange} className="mb-3 mx-auto" style={{width: '50rem'}}>
-        <InputGroup.Text id="basic-addon1">Search</InputGroup.Text>
-        <Form.Control
-          placeHolder="Search Pokemon"
-          aria-label="Search Pokemon"
-          aria-describedby="basic-addon1"
-        />
-      </InputGroup>
-      <h1 className="text-center">PokeVerse</h1>
-      <div className="container">
-        <div className="row">
-          {pokemonFiltered.map((pokemon, idx) => (
-            <div className="col-3">
-              <PokemonCard 
-                key={idx} 
-                name={pokemon.name} 
-                url={pokemon.url}
-                pokemonFiltered={pokemonFiltered}
+
+      <Container>
+        <Row className='mb-4'>
+          <Col sm='8' md='6' className='mx-auto'>
+            <InputGroup>
+              <InputGroup.Text id='search'>Search</InputGroup.Text>
+              <FormControl
+                value={search}
+                aria-label='search'
+                aria-describedby='search'
+                onChange={(e) => setSearch(e.target.value)}
               />
-            </div>
+            </InputGroup>
+          </Col>
+        </Row>
+
+        <Row className='g-4'>
+          {filteredPokemon.map((pokemon) => (
+            <Col key={pokemon.name}>
+              <PokemonCard url={pokemon.url} name={pokemon.name} />
+            </Col>
           ))}
-        </div>
-      </div>
+        </Row>
+      </Container>
     </div>
   );
 }
